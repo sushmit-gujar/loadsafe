@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "loadsafe"
+version = "0.1.0"
+description = "Supply-chain security scanner for ML models: statically audits pickle/PyTorch/joblib/NumPy, safetensors, ONNX, GGUF and Keras artifacts and Hugging Face repos before you load them. SARIF + CycloneDX ML-BOM output."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Sushmit Gujar", email = "sushmit.gujar@gmail.com" }]
+keywords = ["ml-security", "model-scanning", "pickle", "supply-chain", "safetensors", "sarif", "cyclonedx", "ml-bom", "huggingface", "ai-security"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Security",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+hf = ["huggingface_hub>=0.23"]
+dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10", "numpy>=1.26", "jsonschema>=4"]
+eval = ["huggingface_hub>=0.23", "numpy>=1.26", "joblib>=1.3", "scikit-learn>=1.3", "safetensors>=0.4", "onnx>=1.15", "gguf>=0.10", "torch>=2.2"]
+
+[project.scripts]
+loadsafe = "loadsafe.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sushmit-gujar/loadsafe"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/loadsafe"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["B905", "SIM102", "SIM114"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

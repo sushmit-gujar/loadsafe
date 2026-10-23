@@ -87,25 +87,33 @@ def safe_repr(value: Any, limit: int = 160, _depth: int = 0) -> str:
     if isinstance(value, Glob):
         out = value.full
     elif isinstance(value, Call):
-        out = f"{safe_repr(value.func, limit, _depth + 1)}{safe_repr(value.args, limit, _depth + 1)}"
-        if not isinstance(value.args, tuple):
-            out = f"{safe_repr(value.func, limit, _depth + 1)}(*{safe_repr(value.args, limit, _depth + 1)})"
+        fn = safe_repr(value.func, limit, _depth + 1)
+        args = safe_repr(value.args, limit, _depth + 1)
+        out = f"{fn}{args}" if isinstance(value.args, tuple) else f"{fn}(*{args})"
     elif isinstance(value, Unknown):
         out = f"<{value.desc}>"
     elif isinstance(value, Persist):
         out = f"<persistent {safe_repr(value.pid, limit, _depth + 1)}>"
     elif isinstance(value, PDict):
-        inner = ", ".join(f"{safe_repr(k, limit, _depth + 1)}: {safe_repr(v, limit, _depth + 1)}"
-                          for k, v in value.pairs[:8])
+        inner = ", ".join(
+            f"{safe_repr(k, limit, _depth + 1)}: {safe_repr(v, limit, _depth + 1)}"
+            for k, v in value.pairs[:8]
+        )
         out = "{" + inner + (", …" if len(value.pairs) > 8 else "") + "}"
     elif isinstance(value, PSet):
         out = "{" + ", ".join(safe_repr(v, limit, _depth + 1) for v in value.items[:8]) + "}"
     elif isinstance(value, tuple):
         inner = ", ".join(safe_repr(v, limit, _depth + 1) for v in value[:8])
-        out = "(" + inner + ("," if len(value) == 1 else "") + (", …" if len(value) > 8 else "") + ")"
+        out = (
+            "(" + inner + ("," if len(value) == 1 else "") + (", …" if len(value) > 8 else "") + ")"
+        )
     elif isinstance(value, list):
-        out = "[" + ", ".join(safe_repr(v, limit, _depth + 1) for v in value[:8]) + (
-            ", …" if len(value) > 8 else "") + "]"
+        out = (
+            "["
+            + ", ".join(safe_repr(v, limit, _depth + 1) for v in value[:8])
+            + (", …" if len(value) > 8 else "")
+            + "]"
+        )
     elif isinstance(value, (bytes, bytearray)):
         out = repr(bytes(value[:48])) + (f"…({len(value)} bytes)" if len(value) > 48 else "")
     else:
@@ -133,8 +141,16 @@ class PickleScanResult:
 
 
 class _Machine:
-    def __init__(self, f: IO[bytes], path: str, location: str, policy: Policy, depth: int,
-                 result: PickleScanResult, imports: dict[str, _ImportRecord]) -> None:
+    def __init__(
+        self,
+        f: IO[bytes],
+        path: str,
+        location: str,
+        policy: Policy,
+        depth: int,
+        result: PickleScanResult,
+        imports: dict[str, _ImportRecord],
+    ) -> None:
         self.f = f
         self.path = path
         self.location = location
@@ -182,9 +198,13 @@ class _Machine:
             if rec is not None and func.verdict.category == "dangerous" and len(rec.calls) < 5:
                 rec.calls.append((offset, safe_repr(call, 300)))
         else:
-            self._add("LS103", Severity.HIGH,
-                      f"{kind} invokes a non-constant callable {safe_repr(func, 120)}", offset,
-                      call=safe_repr(call, 300))
+            self._add(
+                "LS103",
+                Severity.HIGH,
+                f"{kind} invokes a non-constant callable {safe_repr(func, 120)}",
+                offset,
+                call=safe_repr(call, 300),
+            )
         self._scan_nested(args, offset)
         return call
 
@@ -195,13 +215,23 @@ class _Machine:
         if isinstance(value, (bytes, bytearray)):
             data = bytes(value)
             if len(data) >= 4 and data[0] == 0x80 and data[1] <= 5 and data[-1:] == b".":
-                sub = scan_pickle(data, self.path, f"{self._loc(offset)}/nested", self.policy,
-                                  depth=self.depth + 1, multi=False)
+                sub = scan_pickle(
+                    data,
+                    self.path,
+                    f"{self._loc(offset)}/nested",
+                    self.policy,
+                    depth=self.depth + 1,
+                    multi=False,
+                )
                 if sub.complete and sub.bytes_consumed == len(data):
                     if any(f.severity >= Severity.MEDIUM for f in sub.findings):
-                        self._add("LS105", Severity.HIGH,
-                                  "bytes constant is a nested pickle with findings", offset,
-                                  nested_findings=len(sub.findings))
+                        self._add(
+                            "LS105",
+                            Severity.HIGH,
+                            "bytes constant is a nested pickle with findings",
+                            offset,
+                            nested_findings=len(sub.findings),
+                        )
                     self.result.findings.extend(sub.findings)
             return
         if isinstance(value, (tuple, list)):
@@ -215,29 +245,47 @@ class _Machine:
 
     # -- joblib support ----------------------------------------------------------------------
     def _joblib_after_build(self, obj: Any, state: Any, offset: int) -> None:
-        if not (isinstance(obj, Call) and isinstance(obj.func, Glob)
-                and obj.func.module.startswith("joblib.numpy_pickle")
-                and obj.func.name == "NumpyArrayWrapper" and isinstance(state, PDict)):
+        if not (
+            isinstance(obj, Call)
+            and isinstance(obj.func, Glob)
+            and obj.func.module.startswith("joblib.numpy_pickle")
+            and obj.func.name == "NumpyArrayWrapper"
+            and isinstance(state, PDict)
+        ):
             return
         dtype = state.get("dtype")
         shape = state.get("shape")
-        if not (isinstance(dtype, Call) and isinstance(dtype.args, tuple) and dtype.args
-                and isinstance(dtype.args[0], str) and isinstance(shape, tuple)
-                and all(isinstance(x, int) and x >= 0 for x in shape)):
+        if not (
+            isinstance(dtype, Call)
+            and isinstance(dtype.args, tuple)
+            and dtype.args
+            and isinstance(dtype.args[0], str)
+            and isinstance(shape, tuple)
+            and all(isinstance(x, int) and x >= 0 for x in shape)
+        ):
             raise PickleParseError("unrecognised joblib NumpyArrayWrapper state")
         kind_str = dtype.args[0]
         if kind_str.startswith("O"):
             # object arrays are written as a nested protocol-5 pickle stream
-            sub = _Machine(self.f, self.path, f"{self.location}/joblib-object-array",
-                           self.policy, self.depth, self.result, self.imports)
+            sub = _Machine(
+                self.f,
+                self.path,
+                f"{self.location}/joblib-object-array",
+                self.policy,
+                self.depth,
+                self.result,
+                self.imports,
+            )
             sub.run()
             return
         itemsize = _dtype_itemsize(kind_str, dtype.state)
         count = 1
         for x in shape:
             count *= x
-        if state.has("numpy_array_alignment_bytes") and state.get(
-                "numpy_array_alignment_bytes") is not None:
+        if (
+            state.has("numpy_array_alignment_bytes")
+            and state.get("numpy_array_alignment_bytes") is not None
+        ):
             pad = self.f.read(1)
             if len(pad) != 1:
                 raise PickleParseError("truncated joblib padding")
@@ -354,13 +402,13 @@ class _Machine:
             elif name in ("PUT", "BINPUT", "LONG_BINPUT"):
                 if not st:
                     raise PickleParseError("PUT on empty stack")
-                self.memo[int(arg)] = st[-1]
+                self.memo[int(arg)] = st[-1]  # type: ignore[arg-type]
             elif name == "MEMOIZE":
                 if not st:
                     raise PickleParseError("MEMOIZE on empty stack")
                 self.memo[len(self.memo)] = st[-1]
             elif name in ("GET", "BINGET", "LONG_BINGET"):
-                key = int(arg)
+                key = int(arg)  # type: ignore[arg-type]
                 if key not in self.memo:
                     raise PickleParseError(f"memo key {key} missing")
                 st.append(self.memo[key])
@@ -373,8 +421,13 @@ class _Machine:
                 if isinstance(module, str) and isinstance(gname, str):
                     self.stack.append(self._glob(module, gname, offset))
                 else:
-                    self._add("LS103", Severity.HIGH, "STACK_GLOBAL with non-constant operands "
-                              f"({safe_repr(module, 60)}, {safe_repr(gname, 60)})", offset)
+                    self._add(
+                        "LS103",
+                        Severity.HIGH,
+                        "STACK_GLOBAL with non-constant operands "
+                        f"({safe_repr(module, 60)}, {safe_repr(gname, 60)})",
+                        offset,
+                    )
                     self.stack.append(Unknown("dynamic global"))
             elif name == "INST":
                 module, _, gname = str(arg).partition(" ")
@@ -411,9 +464,12 @@ class _Machine:
                 self._scan_nested(state, offset)
                 self._joblib_after_build(obj, state, offset)
             elif name in ("EXT1", "EXT2", "EXT4"):
-                self._add("LS106", Severity.MEDIUM,
-                          f"{name} resolves a global via the copyreg extension registry (code "
-                          f"{arg})", offset)
+                self._add(
+                    "LS106",
+                    Severity.MEDIUM,
+                    f"{name} resolves a global via the copyreg extension registry (code {arg})",
+                    offset,
+                )
                 st.append(Unknown(f"extension {arg}"))
             elif name == "PERSID":
                 st.append(Persist(arg))
@@ -429,11 +485,31 @@ class _Machine:
             self._scan_nested(v, offset)
 
 
-_PUSH_ARG = frozenset({
-    "INT", "BININT", "BININT1", "BININT2", "LONG", "LONG1", "LONG4", "STRING", "BINSTRING",
-    "SHORT_BINSTRING", "BINBYTES", "SHORT_BINBYTES", "BINBYTES8", "BYTEARRAY8", "UNICODE",
-    "SHORT_BINUNICODE", "BINUNICODE", "BINUNICODE8", "FLOAT", "BINFLOAT",
-})
+_PUSH_ARG = frozenset(
+    {
+        "INT",
+        "BININT",
+        "BININT1",
+        "BININT2",
+        "LONG",
+        "LONG1",
+        "LONG4",
+        "STRING",
+        "BINSTRING",
+        "SHORT_BINSTRING",
+        "BINBYTES",
+        "SHORT_BINBYTES",
+        "BINBYTES8",
+        "BYTEARRAY8",
+        "UNICODE",
+        "SHORT_BINUNICODE",
+        "BINUNICODE",
+        "BINUNICODE8",
+        "FLOAT",
+        "BINFLOAT",
+    }
+)
+
 
 def _dtype_itemsize(kind: str, state: Any) -> int:
     if isinstance(state, tuple) and len(state) >= 6 and isinstance(state[5], int) and state[5] > 0:
@@ -465,9 +541,15 @@ def _skip(f: IO[bytes], n: int) -> None:
         remaining -= len(chunk)
 
 
-def scan_pickle(data: bytes | IO[bytes], path: str, location: str = "",
-                policy: Policy | None = None, depth: int = 0, multi: bool = True,
-                size_hint: int | None = None) -> PickleScanResult:
+def scan_pickle(
+    data: bytes | IO[bytes],
+    path: str,
+    location: str = "",
+    policy: Policy | None = None,
+    depth: int = 0,
+    multi: bool = True,
+    size_hint: int | None = None,
+) -> PickleScanResult:
     """Scan one pickle stream (or, with ``multi``, consecutive pickles) symbolically."""
     policy = policy or Policy()
     f: IO[bytes] = io.BytesIO(data) if isinstance(data, (bytes, bytearray)) else data
@@ -490,10 +572,16 @@ def scan_pickle(data: bytes | IO[bytes], path: str, location: str = "",
         except PickleParseError as exc:
             if index == 0:
                 result.complete = False
-                result.findings.append(Finding(
-                    "LS104", Severity.MEDIUM, f"pickle stream could not be fully parsed: {exc}",
-                    path, f"{location}@{f.tell()}" if location else f"offset {f.tell()}",
-                    {"error": str(exc)}))
+                result.findings.append(
+                    Finding(
+                        "LS104",
+                        Severity.MEDIUM,
+                        f"pickle stream could not be fully parsed: {exc}",
+                        path,
+                        f"{location}@{f.tell()}" if location else f"offset {f.tell()}",
+                        {"error": str(exc)},
+                    )
+                )
             else:
                 # Trailing bytes after a complete pickle (e.g. raw storages in legacy torch
                 # files). Only trust what a *complete* follow-up pickle would contain.
@@ -517,15 +605,40 @@ def _finalize(result: PickleScanResult, imports: dict[str, _ImportRecord], path:
         if v.category == "dangerous":
             if rec.calls:
                 for _off, call in rec.calls:
-                    result.findings.append(Finding(
-                        "LS100", Severity.CRITICAL, f"unpickling calls {call}", path, loc,
-                        {"global": full, "reason": v.reason, "call": call}))
+                    result.findings.append(
+                        Finding(
+                            "LS100",
+                            Severity.CRITICAL,
+                            f"unpickling calls {call}",
+                            path,
+                            loc,
+                            {"global": full, "reason": v.reason, "call": call},
+                        )
+                    )
             else:
-                result.findings.append(Finding(
-                    "LS101", Severity.HIGH, f"pickle imports dangerous global {full}", path, loc,
-                    {"global": full, "reason": v.reason, "count": rec.count}))
+                result.findings.append(
+                    Finding(
+                        "LS101",
+                        Severity.HIGH,
+                        f"pickle imports dangerous global {full}",
+                        path,
+                        loc,
+                        {"global": full, "reason": v.reason, "count": rec.count},
+                    )
+                )
         elif v.category in ("unknown", "ml-library"):
-            result.findings.append(Finding(
-                "LS102", v.severity, f"pickle imports non-allowlisted global {full}", path, loc,
-                {"global": full, "reason": v.reason, "category": v.category,
-                 "count": rec.count}))
+            result.findings.append(
+                Finding(
+                    "LS102",
+                    v.severity,
+                    f"pickle imports non-allowlisted global {full}",
+                    path,
+                    loc,
+                    {
+                        "global": full,
+                        "reason": v.reason,
+                        "category": v.category,
+                        "count": rec.count,
+                    },
+                )
+            )

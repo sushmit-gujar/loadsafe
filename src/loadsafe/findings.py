@@ -121,6 +121,7 @@ class ScanReport:
 
     def to_dict(self) -> dict[str, Any]:
         total_bytes = sum(a.size for a in self.artifacts)
+        worst = self.max_severity()
         return {
             "tool": {"name": "loadsafe", "version": self.tool_version},
             "started_at": self.started_at,
@@ -130,8 +131,7 @@ class ScanReport:
                 "artifacts": len(self.artifacts),
                 "bytes": total_bytes,
                 "findings": self.count_by_severity(),
-                "max_severity": (self.max_severity().label if self.max_severity() is not None
-                                 else None),
+                "max_severity": worst.label if worst is not None else None,
             },
             "repo_findings": [f.to_dict() for f in self.repo_findings],
             "artifacts": [a.to_dict() for a in self.artifacts],
