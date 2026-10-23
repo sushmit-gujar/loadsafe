@@ -69,3 +69,14 @@ def test_license_missing(tmp_path):
     )
     report = scan_paths([str(tmp_path)], hash_files=False)
     assert any(f.rule_id == "LS203" for f in report.repo_findings)
+
+
+def test_absolute_symlink_high(tmp_path, tmp_path_factory):
+    outside = tmp_path_factory.mktemp("outside") / "payload.bin"
+    outside.write_bytes(b"\x7fELF" + b"\x00" * 60)
+    link = tmp_path / "escape.so"
+    link.symlink_to(outside.resolve())  # absolute path outside the repo
+    (tmp_path / "config.json").write_text('{"architectures":["X"]}')
+    report = scan_paths([str(tmp_path)], hash_files=False)
+    hits = [f for f in report.repo_findings if f.rule_id == "LS204"]
+    assert hits and hits[0].severity >= Severity.HIGH

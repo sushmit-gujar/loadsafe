@@ -391,19 +391,25 @@ def scan_repo(root: Path, files: list[Path], looks_like_model: bool) -> list[Fin
         rel = p.relative_to(root).as_posix()
         if p.is_symlink():
             try:
+                raw = os.readlink(p)
                 target = p.resolve()
                 if root_res not in target.parents and target != root_res:
+                    # Absolute escapes and dangling links are HIGH. Relative escapes that
+                    # still resolve (Hugging Face hub's snapshots/ -> blobs/ layout) are INFO.
+                    abs_escape = raw.startswith(("/", "\\")) or (len(raw) > 1 and raw[1] == ":")
+                    sev = Severity.HIGH if abs_escape or not target.is_file() else Severity.INFO
                     findings.append(
                         Finding(
                             "LS204",
-                            Severity.HIGH,
-                            f"symlink points outside the repository: {os.readlink(p)}",
+                            sev,
+                            f"symlink points outside the repository: {raw}",
                             rel,
                             None,
                             {},
                         )
                     )
-                    continue
+                    if not target.is_file():
+                        continue
             except OSError:
                 continue
         if not p.is_file():
