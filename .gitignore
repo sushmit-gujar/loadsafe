@@ -22,3 +22,6 @@ evals/corpus/
 *.onnx
 *.gguf
 *.safetensors
+
+# Keep committed example artifacts
+!examples/**
