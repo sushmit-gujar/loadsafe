@@ -163,9 +163,14 @@ def _check_metadata(meta: Any, ctx: Ctx) -> None:
             )
             continue
         if CODE_LIKE.search(v):
+            sev = (
+                Severity.HIGH
+                if any(t in v for t in ("__import__", "exec(", "eval(", "os.system", "subprocess"))
+                else Severity.MEDIUM
+            )
             ctx.add(
                 "LS121",
-                Severity.MEDIUM,
+                sev,
                 "metadata value contains code-like text",
                 loc,
                 excerpt=v[:120],

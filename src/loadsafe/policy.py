@@ -185,6 +185,7 @@ DANGEROUS_BUILTINS: frozenset[str] = frozenset(
         "execfile",
         "compile",
         "__import__",
+        "print",
         "open",
         "file",
         "getattr",
