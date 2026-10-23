@@ -1,0 +1,8 @@
+- id: loadsafe
+  name: loadsafe
+  description: Scan ML model artifacts for supply-chain risks before commit
+  entry: loadsafe scan --fail-on high
+  language: python
+  types_or: [file]
+  files: '\.(pt|pth|bin|ckpt|pkl|pickle|joblib|npy|npz|safetensors|onnx|gguf|h5|hdf5|keras)$'
+  pass_filenames: true

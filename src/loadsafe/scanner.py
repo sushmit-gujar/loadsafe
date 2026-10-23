@@ -80,12 +80,20 @@ def scan_paths(
         prefix = label.rstrip("/")
         artifacts: list[ArtifactResult] = []
         for p in files:
-            if p.is_symlink() or not p.is_file() or p.name in CONFIG_FILES:
+            if p.name in CONFIG_FILES:
                 continue
-            if not is_candidate(p):
+            # Hugging Face hub caches use symlinks from snapshots/ into blobs/. Follow the
+            # target for content scanning; repo_scan reports LS204 for escapes.
+            try:
+                target = p.resolve() if p.is_symlink() else p
+            except OSError:
+                continue
+            if not target.is_file():
+                continue
+            if not is_candidate(target):
                 continue
             rel = p.relative_to(path).as_posix()
-            res = scan_file(p, f"{prefix}/{rel}", policy, hash_files)
+            res = scan_file(target, f"{prefix}/{rel}", policy, hash_files)
             if res.format == "unknown" and p.suffix.lower() not in NON_PICKLE_PROMISES:
                 continue
             artifacts.append(res)

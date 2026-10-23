@@ -1,0 +1,428 @@
+{
+  "tool": "loadsafe",
+  "version": "0.1.0",
+  "setup": {
+    "python": "3.12.15",
+    "platform": "linux",
+    "note": "PoC malicious artifacts are generated at eval time; payloads are inert (print / write a marker file). Real HF models are downloaded read-only."
+  },
+  "corpus": {
+    "rows": [
+      {
+        "name": "mal_pickle_print_p0",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 70,
+        "seconds": 0.00021461899996211287
+      },
+      {
+        "name": "mal_pickle_print_p2",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 70,
+        "seconds": 9.1725999936898e-05
+      },
+      {
+        "name": "mal_pickle_print_p4",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 73,
+        "seconds": 7.154900004024967e-05
+      },
+      {
+        "name": "mal_pickle_print_p5",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 73,
+        "seconds": 5.795300012323423e-05
+      },
+      {
+        "name": "mal_pickle_os_system",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 82,
+        "seconds": 8.665199993629358e-05
+      },
+      {
+        "name": "mal_pickle_exec",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 58,
+        "seconds": 6.0838999843326746e-05
+      },
+      {
+        "name": "mal_pickle_eval",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 64,
+        "seconds": 5.026899998483714e-05
+      },
+      {
+        "name": "mal_pickle_getattr",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 70,
+        "seconds": 6.206100010786031e-05
+      },
+      {
+        "name": "mal_torch_zip",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 319,
+        "seconds": 0.0004922399998577021
+      },
+      {
+        "name": "mal_npy_object_pickle",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107"
+        ],
+        "bytes": 337,
+        "seconds": 0.00021665300005224708
+      },
+      {
+        "name": "mal_pickle_as_safetensors",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS107",
+          "LS160"
+        ],
+        "bytes": 82,
+        "seconds": 7.998399996722583e-05
+      },
+      {
+        "name": "mal_nested_pickle",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS100",
+          "LS105",
+          "LS107"
+        ],
+        "bytes": 106,
+        "seconds": 8.838700000524113e-05
+      },
+      {
+        "name": "mal_safetensors_bad_header",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "high",
+        "rules": [
+          "LS120"
+        ],
+        "bytes": 95,
+        "seconds": 7.442700007231906e-05
+      },
+      {
+        "name": "mal_safetensors_code_meta",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "high",
+        "rules": [
+          "LS121"
+        ],
+        "bytes": 144,
+        "seconds": 5.759000009675219e-05
+      },
+      {
+        "name": "mal_gguf_ssti",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "high",
+        "rules": [
+          "LS141"
+        ],
+        "bytes": 480,
+        "seconds": 8.222499991461518e-05
+      },
+      {
+        "name": "mal_gguf_bad_counts",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "high",
+        "rules": [
+          "LS140"
+        ],
+        "bytes": 24,
+        "seconds": 3.4941999956572545e-05
+      },
+      {
+        "name": "mal_onnx_pythonop",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "high",
+        "rules": [
+          "LS131"
+        ],
+        "bytes": 89,
+        "seconds": 9.862100000646024e-05
+      },
+      {
+        "name": "mal_keras_lambda",
+        "malicious": true,
+        "flagged": true,
+        "max_severity": "critical",
+        "rules": [
+          "LS150"
+        ],
+        "bytes": 456,
+        "seconds": 0.00016553400018892717
+      },
+      {
+        "name": "benign_pickle_state_dict",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": "low",
+        "rules": [
+          "LS107"
+        ],
+        "bytes": 408,
+        "seconds": 0.00018070900000566326
+      },
+      {
+        "name": "benign_sklearn_joblib",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": "low",
+        "rules": [
+          "LS102",
+          "LS107"
+        ],
+        "bytes": 879,
+        "seconds": 0.0003628510000908136
+      },
+      {
+        "name": "benign_torch_pt",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": "low",
+        "rules": [
+          "LS107"
+        ],
+        "bytes": 1897,
+        "seconds": 0.0002846280001449486
+      },
+      {
+        "name": "benign_npy",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": null,
+        "rules": [],
+        "bytes": 928,
+        "seconds": 7.831199991414906e-05
+      },
+      {
+        "name": "benign_safetensors",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": null,
+        "rules": [],
+        "bytes": 1264,
+        "seconds": 6.498700008705782e-05
+      },
+      {
+        "name": "benign_gguf",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": null,
+        "rules": [],
+        "bytes": 480,
+        "seconds": 5.772800000158895e-05
+      },
+      {
+        "name": "benign_onnx",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": null,
+        "rules": [],
+        "bytes": 98,
+        "seconds": 9.11189999897033e-05
+      },
+      {
+        "name": "benign_keras",
+        "malicious": false,
+        "flagged": false,
+        "max_severity": null,
+        "rules": [],
+        "bytes": 439,
+        "seconds": 0.000141574000053879
+      }
+    ],
+    "detection_rate": 1.0,
+    "false_positive_rate": 0.0,
+    "tp": 18,
+    "fn": 0,
+    "fp": 0,
+    "tn": 8,
+    "seconds": 0.0033481790003406786,
+    "bytes": 9085,
+    "mb_per_s": 2.7134152621695544
+  },
+  "compare": {
+    "picklescan": {
+      "available": true,
+      "detection_rate": 0.3333333333333333,
+      "false_positive_rate": 0.0,
+      "tp": 6,
+      "fn": 12,
+      "fp": 0,
+      "tn": 8,
+      "seconds": 1.6754844579998007
+    },
+    "modelscan": {
+      "available": true,
+      "detection_rate": 0.4444444444444444,
+      "false_positive_rate": 0.375,
+      "tp": 8,
+      "fn": 10,
+      "fp": 3,
+      "tn": 5,
+      "seconds": 3.2192913950000275
+    }
+  },
+  "huggingface": {
+    "rows": [
+      {
+        "repo": "hf-internal-testing/tiny-random-bert",
+        "revision": "f171d7baecaf37b5da5a3616d8833b9969753535",
+        "kind": "mixed",
+        "artifacts": 4,
+        "bytes": 28164564,
+        "seconds": 0.05144944000016949,
+        "findings": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 2,
+          "info": 0
+        },
+        "high_findings": [],
+        "false_positive": false
+      },
+      {
+        "repo": "hf-internal-testing/tiny-random-gpt2",
+        "revision": "71034c5d8bde858ff824298bdedc65515b97d2b9",
+        "kind": "mixed",
+        "artifacts": 3,
+        "bytes": 12477931,
+        "seconds": 0.01934897500018451,
+        "findings": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 2,
+          "info": 0
+        },
+        "high_findings": [],
+        "false_positive": false
+      },
+      {
+        "repo": "sshleifer/tiny-gpt2",
+        "revision": "5f91d94bd9cd7190a9f3216ff93cd1dd95f2c7be",
+        "kind": "pickle",
+        "artifacts": 2,
+        "bytes": 2966266,
+        "seconds": 0.0037711180000314926,
+        "findings": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 3,
+          "info": 0
+        },
+        "high_findings": [],
+        "false_positive": false
+      },
+      {
+        "repo": "sentence-transformers/all-MiniLM-L6-v2",
+        "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+        "kind": "mixed",
+        "artifacts": 12,
+        "bytes": 771518919,
+        "seconds": 0.18621586599988404,
+        "findings": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "info": 0
+        },
+        "high_findings": [],
+        "false_positive": false
+      },
+      {
+        "repo": "google/bert_uncased_L-2_H-128_A-2",
+        "revision": "30b0a37ccaaa32f332884b96992754e246e48c5f",
+        "kind": "mixed",
+        "artifacts": 2,
+        "bytes": 35482953,
+        "seconds": 0.0038404879999234254,
+        "findings": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "info": 0
+        },
+        "high_findings": [],
+        "false_positive": false
+      }
+    ],
+    "false_positive_rate": 0.0,
+    "seconds": 0.26462588700019296,
+    "bytes": 850610633,
+    "mb_per_s": 3214.3893503487047
+  }
+}

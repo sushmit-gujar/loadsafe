@@ -1,0 +1,603 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "loadsafe",
+          "version": "0.1.0",
+          "semanticVersion": "0.1.0",
+          "informationUri": "https://github.com/sushmit-gujar/loadsafe",
+          "rules": [
+            {
+              "id": "LS100",
+              "name": "DangerousCallableInvokedDuringUnpickling",
+              "shortDescription": {
+                "text": "Dangerous callable invoked during unpickling"
+              },
+              "fullDescription": {
+                "text": "The pickle stream calls (REDUCE/INST/OBJ/NEWOBJ) a callable that can execute code, spawn processes, touch the network or the filesystem. Loading this file runs it."
+              },
+              "help": {
+                "text": "The pickle stream calls (REDUCE/INST/OBJ/NEWOBJ) a callable that can execute code, spawn processes, touch the network or the filesystem. Loading this file runs it.",
+                "markdown": "The pickle stream calls (REDUCE/INST/OBJ/NEWOBJ) a callable that can execute code, spawn processes, touch the network or the filesystem. Loading this file runs it.\n\n**Remediation:** Do not load. Obtain the model in safetensors or rebuild it from a trusted source.\n\nOWASP LLM: LLM03:2025 Supply Chain, LLM04:2025 Data and Model Poisoning  \nMITRE ATLAS: AML.T0010.003, AML.T0011.000, AML.T0018.002  \nCWE: CWE-502"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "LLM04:2025 Data and Model Poisoning",
+                  "AML.T0010.003 AI Supply Chain Compromise: Model",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "AML.T0018.002 Manipulate AI Model: Embed Malware",
+                  "external/cwe/cwe-502"
+                ],
+                "security-severity": "9.5",
+                "precision": "high"
+              }
+            },
+            {
+              "id": "LS107",
+              "name": "PickleBasedSerializationFormat",
+              "shortDescription": {
+                "text": "Pickle-based serialization format"
+              },
+              "fullDescription": {
+                "text": "The artifact is deserialized with pickle, which can execute arbitrary code. Prefer safetensors / ONNX / GGUF, or load with torch.load(weights_only=True)."
+              },
+              "help": {
+                "text": "The artifact is deserialized with pickle, which can execute arbitrary code. Prefer safetensors / ONNX / GGUF, or load with torch.load(weights_only=True).",
+                "markdown": "The artifact is deserialized with pickle, which can execute arbitrary code. Prefer safetensors / ONNX / GGUF, or load with torch.load(weights_only=True).\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain  \nMITRE ATLAS: AML.T0010.003, AML.T0011.000  \nCWE: CWE-502"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "AML.T0010.003 AI Supply Chain Compromise: Model",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "external/cwe/cwe-502"
+                ],
+                "security-severity": "3.0",
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "LS121",
+              "name": "SuspiciousSafetensorsMetadata",
+              "shortDescription": {
+                "text": "Suspicious safetensors metadata"
+              },
+              "fullDescription": {
+                "text": "__metadata__ contains non-string values, very long values, URLs or code-like text."
+              },
+              "help": {
+                "text": "__metadata__ contains non-string values, very long values, URLs or code-like text.",
+                "markdown": "__metadata__ contains non-string values, very long values, URLs or code-like text.\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain  \nMITRE ATLAS: AML.T0010.003  \nCWE: CWE-20"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "AML.T0010.003 AI Supply Chain Compromise: Model",
+                  "external/cwe/cwe-20"
+                ],
+                "security-severity": "8.0",
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "LS131",
+              "name": "OnnxCustomDomainOperator",
+              "shortDescription": {
+                "text": "ONNX custom-domain operator"
+              },
+              "fullDescription": {
+                "text": "Nodes use an operator domain outside the standard ONNX / ONNX Runtime domains; running them requires loading a custom-op shared library."
+              },
+              "help": {
+                "text": "Nodes use an operator domain outside the standard ONNX / ONNX Runtime domains; running them requires loading a custom-op shared library.",
+                "markdown": "Nodes use an operator domain outside the standard ONNX / ONNX Runtime domains; running them requires loading a custom-op shared library.\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain  \nMITRE ATLAS: AML.T0010.003, AML.T0011.000  \nCWE: CWE-829"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "AML.T0010.003 AI Supply Chain Compromise: Model",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "external/cwe/cwe-829"
+                ],
+                "security-severity": "8.0",
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "LS141",
+              "name": "ChatTemplateWithTemplateInjectionPatterns",
+              "shortDescription": {
+                "text": "Chat template with template-injection patterns"
+              },
+              "fullDescription": {
+                "text": "A Jinja chat template (GGUF tokenizer.chat_template or tokenizer_config.json) uses dunder attribute access or imports; such templates achieved RCE in loaders that rendered them without a sandbox (e.g. CVE-2024-34359)."
+              },
+              "help": {
+                "text": "A Jinja chat template (GGUF tokenizer.chat_template or tokenizer_config.json) uses dunder attribute access or imports; such templates achieved RCE in loaders that rendered them without a sandbox (e.g. CVE-2024-34359).",
+                "markdown": "A Jinja chat template (GGUF tokenizer.chat_template or tokenizer_config.json) uses dunder attribute access or imports; such templates achieved RCE in loaders that rendered them without a sandbox (e.g. CVE-2024-34359).\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain, LLM04:2025 Data and Model Poisoning  \nMITRE ATLAS: AML.T0010.003, AML.T0011.000, AML.T0018.002  \nCWE: CWE-1336"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "LLM04:2025 Data and Model Poisoning",
+                  "AML.T0010.003 AI Supply Chain Compromise: Model",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "AML.T0018.002 Manipulate AI Model: Embed Malware",
+                  "external/cwe/cwe-1336"
+                ],
+                "security-severity": "8.0",
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "LS150",
+              "name": "KerasLambdaLayer",
+              "shortDescription": {
+                "text": "Keras Lambda layer"
+              },
+              "fullDescription": {
+                "text": "A Keras Lambda layer stores a Python function (often marshalled bytecode) that runs when the model is deserialized or called (cf. CVE-2024-3660)."
+              },
+              "help": {
+                "text": "A Keras Lambda layer stores a Python function (often marshalled bytecode) that runs when the model is deserialized or called (cf. CVE-2024-3660).",
+                "markdown": "A Keras Lambda layer stores a Python function (often marshalled bytecode) that runs when the model is deserialized or called (cf. CVE-2024-3660).\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain, LLM04:2025 Data and Model Poisoning  \nMITRE ATLAS: AML.T0010.003, AML.T0011.000, AML.T0018.002  \nCWE: CWE-94"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "LLM04:2025 Data and Model Poisoning",
+                  "AML.T0010.003 AI Supply Chain Compromise: Model",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "AML.T0018.002 Manipulate AI Model: Embed Malware",
+                  "external/cwe/cwe-94"
+                ],
+                "security-severity": "9.5",
+                "precision": "high"
+              }
+            },
+            {
+              "id": "LS200",
+              "name": "ModelRequiresRemoteCodeTrustRemoteCode",
+              "shortDescription": {
+                "text": "Model requires remote code (trust_remote_code)"
+              },
+              "fullDescription": {
+                "text": "config.json / tokenizer_config.json declares auto_map or custom pipelines, so loading with trust_remote_code=True executes Python shipped in the repo."
+              },
+              "help": {
+                "text": "config.json / tokenizer_config.json declares auto_map or custom pipelines, so loading with trust_remote_code=True executes Python shipped in the repo.",
+                "markdown": "config.json / tokenizer_config.json declares auto_map or custom pipelines, so loading with trust_remote_code=True executes Python shipped in the repo.\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain  \nMITRE ATLAS: AML.T0010.001, AML.T0011.000  \nCWE: CWE-829, CWE-94"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "AML.T0010.001 AI Supply Chain Compromise: AI Software",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "external/cwe/cwe-829",
+                  "external/cwe/cwe-94"
+                ],
+                "security-severity": "8.0",
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "LS201",
+              "name": "DangerousCallInRepositoryPythonCode",
+              "shortDescription": {
+                "text": "Dangerous call in repository Python code"
+              },
+              "fullDescription": {
+                "text": "Custom modeling/tokenizer code calls exec/eval/os.system/subprocess/network APIs."
+              },
+              "help": {
+                "text": "Custom modeling/tokenizer code calls exec/eval/os.system/subprocess/network APIs.",
+                "markdown": "Custom modeling/tokenizer code calls exec/eval/os.system/subprocess/network APIs.\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain  \nMITRE ATLAS: AML.T0010.001, AML.T0011.000  \nCWE: CWE-94, CWE-78"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain",
+                  "AML.T0010.001 AI Supply Chain Compromise: AI Software",
+                  "AML.T0011.000 User Execution: Unsafe AI Artifacts",
+                  "external/cwe/cwe-94",
+                  "external/cwe/cwe-78"
+                ],
+                "security-severity": "9.5",
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "LS203",
+              "name": "NoLicenseDeclared",
+              "shortDescription": {
+                "text": "No license declared"
+              },
+              "fullDescription": {
+                "text": "No LICENSE file and no license in the model card front matter; provenance and usage rights are unknown."
+              },
+              "help": {
+                "text": "No LICENSE file and no license in the model card front matter; provenance and usage rights are unknown.",
+                "markdown": "No LICENSE file and no license in the model card front matter; provenance and usage rights are unknown.\n\n**Remediation:** Review the artifact.\n\nOWASP LLM: LLM03:2025 Supply Chain  \nMITRE ATLAS: -  \nCWE: -"
+              },
+              "helpUri": "https://github.com/sushmit-gujar/loadsafe#rules",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "LLM03:2025 Supply Chain"
+                ],
+                "security-severity": "3.0",
+                "precision": "medium"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "LS200",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "[HIGH] auto_map requires trust_remote_code: modeling.Evil (auto_map)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/suspect_repo/config.json"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "49c11ae53d667ff54b9fa817bbb712ea"
+          },
+          "properties": {
+            "severity": "high",
+            "details": {
+              "auto_map": [
+                "modeling.Evil"
+              ]
+            }
+          }
+        },
+        {
+          "ruleId": "LS201",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "[CRITICAL] os.system() call (shell command at import time)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/suspect_repo/modeling.py"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "8a695e5b3569a646070d5d442f8a91bf"
+          },
+          "properties": {
+            "severity": "critical",
+            "details": {
+              "call": "os.system"
+            }
+          }
+        },
+        {
+          "ruleId": "LS203",
+          "ruleIndex": 8,
+          "level": "note",
+          "message": {
+            "text": "[LOW] no LICENSE file or model-card license"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "2e87f9cbaee9e37a65c4629efac9b7f6"
+          },
+          "properties": {
+            "severity": "low"
+          }
+        },
+        {
+          "ruleId": "LS141",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "[HIGH] chat template contains template-injection patterns: dunder attribute, import/eval/exec call, jinja global gadget (tokenizer.chat_template)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_gguf_ssti/evil.gguf"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "725c6a0f86a72e8a6e37ce95d7febf83"
+          },
+          "properties": {
+            "severity": "high",
+            "details": {
+              "excerpt": "{{ self.__init__.__globals__.__builtins__.exec('x=1') }}"
+            }
+          }
+        },
+        {
+          "ruleId": "LS150",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "[CRITICAL] Keras Lambda layer with serialized Python bytecode (lam) (config.json:$.config.layers[0])"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_keras_lambda/evil.keras"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "264cc035ab4052501a94fc82bbd78c76"
+          },
+          "properties": {
+            "severity": "critical"
+          }
+        },
+        {
+          "ruleId": "LS131",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "[HIGH] PythonOp operator executes Python code at runtime (node PythonOp)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_onnx_pythonop/pythonop.onnx"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "9e638cd511f7a57ea9249b05ba15b8d9"
+          },
+          "properties": {
+            "severity": "high",
+            "details": {
+              "domain": "com.evil"
+            }
+          }
+        },
+        {
+          "ruleId": "LS100",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "[CRITICAL] unpickling calls posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",) (offset 2)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_pickle_os_system/evil_p2.pkl"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "ccc0f5db45313e37e98956eed2976326"
+          },
+          "properties": {
+            "severity": "critical",
+            "details": {
+              "global": "posix.system",
+              "reason": "module posix can execute code, spawn processes or perform I/O",
+              "call": "posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",)"
+            }
+          }
+        },
+        {
+          "ruleId": "LS107",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "[LOW] pickle artifact is deserialized with pickle"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_pickle_os_system/evil_p2.pkl"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "11b27631c22cb6aea6b21357c2e4fecb"
+          },
+          "properties": {
+            "severity": "low"
+          }
+        },
+        {
+          "ruleId": "LS121",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "[HIGH] metadata value contains code-like text (__metadata__.loader)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_safetensors_code_meta/meta.safetensors"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "b691687f44ff7be61b9a6125a1bbe09e"
+          },
+          "properties": {
+            "severity": "high",
+            "details": {
+              "excerpt": "__import__('os').system('id')"
+            }
+          }
+        },
+        {
+          "ruleId": "LS100",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "[CRITICAL] unpickling calls posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",) (archive/data.pkl@2)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_torch_zip/evil_model.pt"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "819882ddaceb0bce02e1478ac8ae98f2"
+          },
+          "properties": {
+            "severity": "critical",
+            "details": {
+              "global": "posix.system",
+              "reason": "module posix can execute code, spawn processes or perform I/O",
+              "call": "posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",)"
+            }
+          }
+        },
+        {
+          "ruleId": "LS107",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "[LOW] PyTorch checkpoint is pickle-based; load with torch.load(weights_only=True) or convert to safetensors"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/mal_torch_zip/evil_model.pt"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "cb2457359ffd37b885663aa9e2109c8c"
+          },
+          "properties": {
+            "severity": "low"
+          }
+        },
+        {
+          "ruleId": "LS121",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "[HIGH] metadata value contains code-like text (__metadata__.loader)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tmp/tmp0socvo5_/suspect_repo/model.safetensors"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "loadsafe/v1": "8144d770a8c3efd4ab0e061b2d611587"
+          },
+          "properties": {
+            "severity": "high",
+            "details": {
+              "excerpt": "__import__('os').system('id')"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "summary": {
+          "critical": 4,
+          "high": 5,
+          "medium": 0,
+          "low": 3,
+          "info": 0
+        }
+      }
+    }
+  ]
+}

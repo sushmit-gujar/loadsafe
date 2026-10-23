@@ -1,0 +1,431 @@
+{
+  "tool": {
+    "name": "loadsafe",
+    "version": "0.1.0"
+  },
+  "started_at": "2026-10-23T04:23:37+00:00",
+  "seconds": 0.002526,
+  "targets": [
+    "/tmp/tmp0socvo5_"
+  ],
+  "summary": {
+    "artifacts": 9,
+    "bytes": 3906,
+    "findings": {
+      "critical": 4,
+      "high": 5,
+      "medium": 0,
+      "low": 3,
+      "info": 0
+    },
+    "max_severity": "critical"
+  },
+  "repo_findings": [
+    {
+      "rule_id": "LS200",
+      "severity": "high",
+      "message": "auto_map requires trust_remote_code: modeling.Evil",
+      "path": "examples/sample-corpus/config.json",
+      "location": "auto_map",
+      "details": {
+        "auto_map": [
+          "modeling.Evil"
+        ]
+      }
+    },
+    {
+      "rule_id": "LS201",
+      "severity": "critical",
+      "message": "os.system() call (shell command at import time)",
+      "path": "examples/sample-corpus/modeling.py",
+      "location": "line 2",
+      "details": {
+        "call": "os.system"
+      }
+    },
+    {
+      "rule_id": "LS203",
+      "severity": "low",
+      "message": "no LICENSE file or model-card license",
+      "path": "/tmp/tmp0socvo5_",
+      "location": null,
+      "details": {}
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "examples/sample-corpus/array.npy",
+      "format": "npy",
+      "size": 928,
+      "sha256": "563246196bfd2c293acf1a93738f126c2de6e3a43ee50e9f1551e95c9d4e0a35",
+      "scan_seconds": 8.9e-05,
+      "error": null,
+      "metadata": {
+        "hash_seconds": 0.000103
+      },
+      "findings": []
+    },
+    {
+      "path": "examples/sample-corpus/model.safetensors",
+      "format": "safetensors",
+      "size": 1264,
+      "sha256": "3130b7f4d0a5ee868d291a2b038f370de4caa3b105f55dfa85decf981a905336",
+      "scan_seconds": 7.8e-05,
+      "error": null,
+      "metadata": {
+        "header_bytes": 168,
+        "safetensors_metadata_keys": [
+          "framework",
+          "note"
+        ],
+        "tensors": 2,
+        "parameters": 272,
+        "hash_seconds": 1.7e-05
+      },
+      "findings": []
+    },
+    {
+      "path": "examples/sample-corpus/evil.gguf",
+      "format": "gguf",
+      "size": 480,
+      "sha256": "463d84d170f6d84a4d1ed4c712aeeb8ecf5cc28cb0f3923a3086d4381288debb",
+      "scan_seconds": 8.1e-05,
+      "error": null,
+      "metadata": {
+        "gguf_version": 3,
+        "tensors": 1,
+        "kv": 2,
+        "general.architecture": "llama",
+        "chat_templates": [
+          "tokenizer.chat_template"
+        ],
+        "first_tensor": "t",
+        "hash_seconds": 1.1e-05
+      },
+      "findings": [
+        {
+          "rule_id": "LS141",
+          "severity": "high",
+          "message": "chat template contains template-injection patterns: dunder attribute, import/eval/exec call, jinja global gadget",
+          "path": "examples/sample-corpus/evil.gguf",
+          "location": "tokenizer.chat_template",
+          "details": {
+            "excerpt": "{{ self.__init__.__globals__.__builtins__.exec('x=1') }}"
+          }
+        }
+      ]
+    },
+    {
+      "path": "examples/sample-corpus/evil.keras",
+      "format": "keras-v3",
+      "size": 456,
+      "sha256": "c5205e076c7076c37afeeaba9abc0f5d3565d6b1a952afcda8281773fcbbaf65",
+      "scan_seconds": 0.000422,
+      "error": null,
+      "metadata": {
+        "members": 2,
+        "keras_layers": 3,
+        "hash_seconds": 1.2e-05
+      },
+      "findings": [
+        {
+          "rule_id": "LS150",
+          "severity": "critical",
+          "message": "Keras Lambda layer with serialized Python bytecode (lam)",
+          "path": "examples/sample-corpus/evil.keras",
+          "location": "config.json:$.config.layers[0]",
+          "details": {}
+        }
+      ]
+    },
+    {
+      "path": "examples/sample-corpus/pythonop.onnx",
+      "format": "onnx",
+      "size": 89,
+      "sha256": "887893e81d41e4939d8ffdb8792e98a3c1a0b7a7a1111715df214771b0f841a9",
+      "scan_seconds": 8.7e-05,
+      "error": null,
+      "metadata": {
+        "ir_version": 9,
+        "opsets": {
+          "ai.onnx": 18,
+          "com.evil": 1
+        },
+        "nodes": 1,
+        "initializers": 0,
+        "external_tensors": 0,
+        "domains": {
+          "com.evil": 1
+        },
+        "hash_seconds": 1.4e-05
+      },
+      "findings": [
+        {
+          "rule_id": "LS131",
+          "severity": "high",
+          "message": "PythonOp operator executes Python code at runtime",
+          "path": "examples/sample-corpus/pythonop.onnx",
+          "location": "node PythonOp",
+          "details": {
+            "domain": "com.evil"
+          }
+        }
+      ]
+    },
+    {
+      "path": "examples/sample-corpus/evil_p2.pkl",
+      "format": "pickle",
+      "size": 82,
+      "sha256": "c8028511673d67ec9eeae953af77508ef5756dc6ed6fee4bc1c9c4e281bcfb6e",
+      "scan_seconds": 0.000111,
+      "error": null,
+      "metadata": {
+        "pickle_opcodes": 10,
+        "pickles": 1,
+        "pickle_globals": {
+          "posix.system": "dangerous"
+        },
+        "hash_seconds": 9e-06
+      },
+      "findings": [
+        {
+          "rule_id": "LS100",
+          "severity": "critical",
+          "message": "unpickling calls posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",)",
+          "path": "examples/sample-corpus/evil_p2.pkl",
+          "location": "offset 2",
+          "details": {
+            "global": "posix.system",
+            "reason": "module posix can execute code, spawn processes or perform I/O",
+            "call": "posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",)"
+          }
+        },
+        {
+          "rule_id": "LS107",
+          "severity": "low",
+          "message": "pickle artifact is deserialized with pickle",
+          "path": "examples/sample-corpus/evil_p2.pkl",
+          "location": null,
+          "details": {}
+        }
+      ]
+    },
+    {
+      "path": "examples/sample-corpus/meta.safetensors",
+      "format": "safetensors",
+      "size": 144,
+      "sha256": "67ed6685f3299bd704741e0e9cdb8dac0c645b0c785f504e2e91b069b5a9df64",
+      "scan_seconds": 4.5e-05,
+      "error": null,
+      "metadata": {
+        "header_bytes": 120,
+        "safetensors_metadata_keys": [
+          "loader"
+        ],
+        "tensors": 1,
+        "parameters": 4,
+        "hash_seconds": 8e-06
+      },
+      "findings": [
+        {
+          "rule_id": "LS121",
+          "severity": "high",
+          "message": "metadata value contains code-like text",
+          "path": "examples/sample-corpus/meta.safetensors",
+          "location": "__metadata__.loader",
+          "details": {
+            "excerpt": "__import__('os').system('id')"
+          }
+        }
+      ]
+    },
+    {
+      "path": "examples/sample-corpus/evil_model.pt",
+      "format": "pytorch-zip",
+      "size": 319,
+      "sha256": "d53f3ccf74cad8c9e05b300d1f3f81fba1fbf220608dfcc35a89b021144a9ed4",
+      "scan_seconds": 0.00016,
+      "error": null,
+      "metadata": {
+        "members": 2,
+        "pickle_globals": {
+          "posix.system": "dangerous"
+        },
+        "pickle_opcodes": 10,
+        "hash_seconds": 9e-06
+      },
+      "findings": [
+        {
+          "rule_id": "LS100",
+          "severity": "critical",
+          "message": "unpickling calls posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",)",
+          "path": "examples/sample-corpus/evil_model.pt",
+          "location": "archive/data.pkl@2",
+          "details": {
+            "global": "posix.system",
+            "reason": "module posix can execute code, spawn processes or perform I/O",
+            "call": "posix.system(\"echo loadsafe-poc > '/tmp/loadsafe_poc_marker.txt'\",)"
+          }
+        },
+        {
+          "rule_id": "LS107",
+          "severity": "low",
+          "message": "PyTorch checkpoint is pickle-based; load with torch.load(weights_only=True) or convert to safetensors",
+          "path": "examples/sample-corpus/evil_model.pt",
+          "location": null,
+          "details": {}
+        }
+      ]
+    },
+    {
+      "path": "examples/sample-corpus/model.safetensors",
+      "format": "safetensors",
+      "size": 144,
+      "sha256": "67ed6685f3299bd704741e0e9cdb8dac0c645b0c785f504e2e91b069b5a9df64",
+      "scan_seconds": 3.4e-05,
+      "error": null,
+      "metadata": {
+        "header_bytes": 120,
+        "safetensors_metadata_keys": [
+          "loader"
+        ],
+        "tensors": 1,
+        "parameters": 4,
+        "hash_seconds": 8e-06
+      },
+      "findings": [
+        {
+          "rule_id": "LS121",
+          "severity": "high",
+          "message": "metadata value contains code-like text",
+          "path": "examples/sample-corpus/model.safetensors",
+          "location": "__metadata__.loader",
+          "details": {
+            "excerpt": "__import__('os').system('id')"
+          }
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "LS100": {
+      "title": "Dangerous callable invoked during unpickling",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain",
+        "LLM04:2025 Data and Model Poisoning"
+      ],
+      "atlas": [
+        "AML.T0010.003",
+        "AML.T0011.000",
+        "AML.T0018.002"
+      ],
+      "cwe": [
+        "CWE-502"
+      ]
+    },
+    "LS107": {
+      "title": "Pickle-based serialization format",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain"
+      ],
+      "atlas": [
+        "AML.T0010.003",
+        "AML.T0011.000"
+      ],
+      "cwe": [
+        "CWE-502"
+      ]
+    },
+    "LS121": {
+      "title": "Suspicious safetensors metadata",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain"
+      ],
+      "atlas": [
+        "AML.T0010.003"
+      ],
+      "cwe": [
+        "CWE-20"
+      ]
+    },
+    "LS131": {
+      "title": "ONNX custom-domain operator",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain"
+      ],
+      "atlas": [
+        "AML.T0010.003",
+        "AML.T0011.000"
+      ],
+      "cwe": [
+        "CWE-829"
+      ]
+    },
+    "LS141": {
+      "title": "Chat template with template-injection patterns",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain",
+        "LLM04:2025 Data and Model Poisoning"
+      ],
+      "atlas": [
+        "AML.T0010.003",
+        "AML.T0011.000",
+        "AML.T0018.002"
+      ],
+      "cwe": [
+        "CWE-1336"
+      ]
+    },
+    "LS150": {
+      "title": "Keras Lambda layer",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain",
+        "LLM04:2025 Data and Model Poisoning"
+      ],
+      "atlas": [
+        "AML.T0010.003",
+        "AML.T0011.000",
+        "AML.T0018.002"
+      ],
+      "cwe": [
+        "CWE-94"
+      ]
+    },
+    "LS200": {
+      "title": "Model requires remote code (trust_remote_code)",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain"
+      ],
+      "atlas": [
+        "AML.T0010.001",
+        "AML.T0011.000"
+      ],
+      "cwe": [
+        "CWE-829",
+        "CWE-94"
+      ]
+    },
+    "LS201": {
+      "title": "Dangerous call in repository Python code",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain"
+      ],
+      "atlas": [
+        "AML.T0010.001",
+        "AML.T0011.000"
+      ],
+      "cwe": [
+        "CWE-94",
+        "CWE-78"
+      ]
+    },
+    "LS203": {
+      "title": "No license declared",
+      "owasp_llm": [
+        "LLM03:2025 Supply Chain"
+      ],
+      "atlas": [],
+      "cwe": []
+    }
+  }
+}

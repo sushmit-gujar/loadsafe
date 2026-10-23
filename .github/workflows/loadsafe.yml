@@ -1,0 +1,41 @@
+# Drop-in workflow: scan a model directory, fail the build on high findings, upload SARIF.
+name: loadsafe
+on:
+  workflow_dispatch:
+    inputs:
+      path:
+        description: Path to model file or directory
+        type: string
+        default: examples
+      fail-on:
+        type: string
+        default: high
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install .
+      - name: Scan
+        id: scan
+        continue-on-error: true
+        run: |
+          loadsafe scan "${{ inputs.path }}" \
+            --fail-on "${{ inputs.fail-on }}" \
+            --format text \
+            --sarif loadsafe.sarif
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: loadsafe.sarif
+        continue-on-error: true
+      - name: Fail on findings
+        if: steps.scan.outcome == 'failure'
+        run: exit 1
