@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import io
-import json
 import struct
 import zipfile
 
@@ -18,7 +17,10 @@ from loadsafe.scanners.zip_scan import scan_zip
 
 def test_safetensors_duplicate_key():
     # Duplicate JSON keys are rejected by object_pairs_hook.
-    header = b'{"a":{"dtype":"F32","shape":[1],"data_offsets":[0,4]},"a":{"dtype":"F32","shape":[1],"data_offsets":[0,4]}}'
+    header = (
+        b'{"a":{"dtype":"F32","shape":[1],"data_offsets":[0,4]},'
+        b'"a":{"dtype":"F32","shape":[1],"data_offsets":[0,4]}}'
+    )
     data = struct.pack("<Q", len(header)) + header + b"\x00\x00\x00\x00"
     ctx = Ctx("x", Policy())
     scan_safetensors(io.BytesIO(data), len(data), ctx)
@@ -36,7 +38,7 @@ def test_onnx_external_path_traversal():
     # TensorProto with external_data location="../etc/passwd".
     # Hand-built protobuf is error-prone; use a tiny valid model via onnx if available,
     # otherwise skip.
-    onnx = pytest_importorskip = __import__("pytest").importorskip("onnx")
+    __import__("pytest").importorskip("onnx")
     from onnx import TensorProto, helper
 
     x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1])

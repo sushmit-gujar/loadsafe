@@ -14,9 +14,9 @@ import pickle
 import struct
 import tempfile
 import zipfile
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 MARKER = Path(tempfile.gettempdir()) / "loadsafe_poc_marker.txt"
 
@@ -115,8 +115,8 @@ def _benign_safetensors(p: Path) -> Path:
 
 
 def _benign_gguf(p: Path) -> Path:
-    import numpy as np
     import gguf
+    import numpy as np
 
     out = p / "tiny.gguf"
     w = gguf.GGUFWriter(str(out), "llama")
@@ -218,8 +218,8 @@ def _mal_safetensors_code_metadata(p: Path) -> Path:
 
 
 def _mal_gguf_ssti(p: Path) -> Path:
-    import numpy as np
     import gguf
+    import numpy as np
 
     out = p / "evil.gguf"
     w = gguf.GGUFWriter(str(out), "llama")
@@ -240,7 +240,6 @@ def _mal_gguf_bad(p: Path) -> Path:
 
 
 def _mal_onnx_pythonop(p: Path) -> Path:
-    import onnx
     from onnx import TensorProto, helper
 
     x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1])
